@@ -2,7 +2,7 @@
 Student information for this assignment:
 
 Replace <FULL NAME> with your name.
-On my/our honor, Anthony Dezdha and <FULL NAME>, this
+On my/our honor, Anthony Dezdha and Saul Marenco, this
 programming assignment is my own work and I have not provided this code to
 any other student.
 
@@ -37,78 +37,99 @@ class Employee(ABC):
     """
     Abstract base class representing a generic employee in the system.
     """
-#ensure setup has every sublcas, same basicsetup
-#name, manager read only, salary is setter and property due to possibility of neg
-#name (string, read-only): The name of the employee. This is a private instance variable that can only be accessed via a public property. It is read-only.
-#manager (None or Manager, read-only): The employee's manager. This is a private instance variable that can only be accessed via a public property. It is read-only.
-#performance (integer): The employee’s performance on a percentage scale of 0 to 100 as an integer value (PERCENTAGE_MIN to PERCENTAGE_MAX). The value is automatically clamped between 0 and 100 if a value that is out of range is given.
-#happiness (integer): The employee’s happiness on a percentage scale of 0 to 100 as an integer value (PERCENTAGE_MIN to PERCENTAGE_MAX). The value is automatically clamped between 0 and 100 if a value that is out of range is given.
-#salary (integer): The employee’s salary. Salaries must always be non-negative, and attempting to set a negative value raises a ValueError with the corresponding message SALARY_ERROR_MESSAGE.
+    # ensure setup has every subclass, same basic setup
+    # name, manager read only, salary is setter and property due to possibility of neg
+    # name (string, read-only): The name of the employee. This is a private instance variable that can only be accessed via a public property. It is read-only.
+    # manager (None or Manager, read-only): The employee's manager. This is a private instance variable that can only be accessed via a public property. It is read-only.
+    # performance (integer): The employee’s performance on a percentage scale of 0 to 100 as an integer value (PERCENTAGE_MIN to PERCENTAGE_MAX). The value is automatically clamped between 0 and 100 if a value that is out of range is given.
+    # happiness (integer): The employee’s happiness on a percentage scale of 0 to 100 as an integer value (PERCENTAGE_MIN to PERCENTAGE_MAX). The value is automatically clamped between 0 and 100 if a value that is out of range is given.
+    # salary (integer): The employee’s salary. Salaries must always be non-negative, and attempting to set a negative value raises a ValueError with the corresponding message SALARY_ERROR_MESSAGE.
 
     def __init__(self, name, manager, salary, savings):
         self.relationships = {}
         self.savings = savings
         self.is_employed = True
 
-        self.__name = name #priv
-        self.__manager = manager #priv
+        self.__name = name  # priv
+        self.__manager = manager  # priv
 
+        #  use self.__performance
+        self.__performance = INITIAL_PERFORMANCE
+        self.__happiness = INITIAL_HAPPINESS
+        # Use setters to clamp values
         self.performance = INITIAL_PERFORMANCE
         self.happiness = INITIAL_HAPPINESS
-        self.salary = salary #prop non neg
-        #set our properties, spec for salary requiring both
+        self.salary = salary  # prop non neg
+        # set our properties
+
     @property
     def name(self):
         return self.__name
+
     @property
     def manager(self):
         return self.__manager
+
     @property
     def salary(self):
         return self.__salary
+
     @salary.setter
     def salary(self, value):
         if value < 0:
             raise ValueError(SALARY_ERROR_MESSAGE)
         self.__salary = value
+
     @property
     def performance(self):
         return self.__performance
+
     @performance.setter
-    def performance(self, value):
+    def performance(self, val):
         if val < PERCENTAGE_MIN:
-            self.__performance = PERCENTAGE_MIN
+            val = PERCENTAGE_MIN
         elif val > PERCENTAGE_MAX:
-            self.__performance = PERCENTAGE_MAX
-        else:
-            self.__performance = value
+            val = PERCENTAGE_MAX
+        self.__performance = val
+
     @property
     def happiness(self):
         return self.__happiness
+
     @happiness.setter
-    def happiness(self, val):
-        if val < PERCENTAGE_MIN:
-            self.__happiness = PERCENTAGE_MIN
-        elif val > PERCENTAGE_MAX:
-            self.__happiness = PERCENTAGE_MAX
-        else:
-            self.__happiness = val
+    def happiness(self, value):
+        # use parameter  and assign to __happiness
+        if value < PERCENTAGE_MIN:
+            value = PERCENTAGE_MIN
+        elif value > PERCENTAGE_MAX:
+            value = PERCENTAGE_MAX
+        self.__happiness = value
+
     def daily_expense(self):
-        #decrease happy by 1 and reduce our savings by the amount in daily
-        # if savings fall below 0, employee is nO LONGER EMPLOYED!
+        # decrease happy by 1 and reduce our savings by the amount in DAILY_EXPENSE
+        # if savings fall below 0, employee is NO LONGER EMPLOYED!
         self.happiness -= 1
         self.savings -= DAILY_EXPENSE
         if self.savings < 0:
             self.is_employed = False
+
     @abstractmethod
     def work(self):
         pass
+
     def interact(self, employee):
-        #check our interaction dic, if yes do as by  start 1 and if not do as start by 1
-        if employee.name in self.relationships:
+        # check our interaction dict; if employee.name not present, initialize to 0
+        if employee.name not in self.relationships:
+            self.relationships[employee.name] = 0
+
+        if self.relationships[employee.name] > RELATIONSHIP_THRESHOLD:
+            self.happiness += 1
+        elif self.happiness >= HAPPINESS_THRESHOLD and employee.happiness >= HAPPINESS_THRESHOLD:
             self.relationships[employee.name] += 1
         else:
-            self.relationships[employee.name] = 1
+            self.relationships[employee.name] -= 1
+            self.happiness -= 1
+
     def __str__(self):
         return (
             f"{self.name}\n"
@@ -124,12 +145,11 @@ class Manager(Employee):
     A subclass of Employee representing a manager.
     """
     def work(self):
-        #-5, 5 randint adjust randomly
-        #if perf is less than 0, set to 0
-        # if + add one to mans happy
+        # -5, 5 randint adjust randomly
+        # if performance is less than 0, set to 0
+        # if positive, add one to manager's happiness
         perfchange = random.randint(-5, 5)
         self.performance += perfchange
-        self.performance = max(0, min(100, self.performance))
 
         if perfchange <= 0:
             self.happiness -= 1
@@ -137,8 +157,8 @@ class Manager(Employee):
                 self.relationships[x] -= 1
         else:
             self.happiness += 1
-        self.happiness = max(0, min(100, self.happiness))
-
+        self.performance = self.performance
+        self.happiness = self.happiness
 
 
 class TemporaryEmployee(Employee):
@@ -153,42 +173,44 @@ class TemporaryEmployee(Employee):
             self.happiness -= 2
         else:
             self.happiness += 1
+        self.performance = self.performance
+        self.happiness = self.happiness
 
-    def interact(self, other):
-        super().interact(other)
-
-        if other.manager is True:
-            if other.hapiness > HAPPINESS_THRESHOLD and self.performance >= TEMP_EMPLOYEE_PERFORMANCE_THRESHOLD:
+    def interact(self, employee):
+        super().interact(employee)
+        if employee == self.manager:
+            if (employee.happiness > HAPPINESS_THRESHOLD
+                    and self.performance >= TEMP_EMPLOYEE_PERFORMANCE_THRESHOLD):
                 self.savings += MANAGER_BONUS
-
-            elif self.manager.hapiness <= HAPPINESS_THRESHOLD:
-                self.salary = self.salary // 2
+            elif employee.happiness <= HAPPINESS_THRESHOLD:
+                self.salary //= 2
                 self.happiness -= 5
-
                 if self.salary == 0:
                     self.is_employed = False
+        self.happiness = self.happiness
 
 
 class PermanentEmployee(Employee):
     """
     A subclass of Employee representing a permanent employee.
     """
-    # -10, 10 randint
-    #non neg then emp happy + 1
-    #if perf (-) happy -1
     def work(self):
         perfchange = random.randint(-10, 10)
         self.performance += perfchange
-        self.performance = max(0, min(100, self.performance))
+
         if perfchange >= 0:
             self.happiness += 1
         else:
             self.happiness -= 1
-        self.happiness = max(0, min(100, self.happiness))
-    def interact(self,employee):
+        self.performance = self.performance
+        self.happiness = self.happiness
+
+    def interact(self, employee):
         super().interact(employee)
-        if employee.happiness > HAPPINESS_THRESHOLD \
-            and self.performance > PERM_EMPLOYEE_PERFORMANCE_THRESHOLD:
+        if employee == self.manager:
+            if employee.happiness > HAPPINESS_THRESHOLD and \
+                self.performance > PERM_EMPLOYEE_PERFORMANCE_THRESHOLD:
                 self.savings += MANAGER_BONUS
-        elif employee.happiness <= HAPPINESS_THRESHOLD:
-            self.happiness -= 1
+            elif employee.happiness <= HAPPINESS_THRESHOLD:
+                self.happiness -= 1
+        self.happiness = self.happiness
