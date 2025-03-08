@@ -32,7 +32,7 @@ PERCENTAGE_MIN = 0
 SALARY_ERROR_MESSAGE = "Salary must be non-negative."
 
 
-# TODO: implement this class. You may delete this comment when you are done.
+
 class Employee(ABC):
     """
     Abstract base class representing a generic employee in the system.
@@ -96,7 +96,7 @@ class Employee(ABC):
             f"\tPerformance: {self.performance}%"
         )
 
-# TODO: implement this class. You may delete this comment when you are done.
+
 class Manager(Employee):
     """
     A subclass of Employee representing a manager.
@@ -118,14 +118,35 @@ class Manager(Employee):
         self.happiness = max(0, min(100, self.happiness))
 
 
-# TODO: implement this class. You may delete this comment when you are done.
+
 class TemporaryEmployee(Employee):
     """
     A subclass of Employee representing a temporary employee.
     """
+    def work(self):
+        adj = random.randint(-15, 15)
+        self.performance += adj
+
+        if adj <= 0:
+            self.happiness -= 2
+        else:
+            self.happiness += 1
+
+    def interact(self, other):
+        super().interact(other)
+
+        if other.manager is True:
+            if other.hapiness > HAPPINESS_THRESHOLD and self.performance >= TEMP_EMPLOYEE_PERFORMANCE_THRESHOLD:
+                self.savings += MANAGER_BONUS
+
+            elif self.manager.hapiness <= HAPPINESS_THRESHOLD:
+                self.salary = self.salary // 2
+                self.happiness -= 5
+
+                if self.salary == 0:
+                    self.is_employed = False
 
 
-# TODO: implement this class. You may delete this comment when you are done.
 class PermanentEmployee(Employee):
     """
     A subclass of Employee representing a permanent employee.
