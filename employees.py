@@ -71,6 +71,28 @@ class Employee(ABC):
         if value < 0:
             raise ValueError(SALARY_ERROR_MESSAGE)
         self.__salary = value
+    @property
+    def performance(self):
+        return self.__performance
+    @performance.setter
+    def performance(self, value):
+        if val < PERCENTAGE_MIN:
+            self.__performance = PERCENTAGE_MIN
+        elif val > PERCENTAGE_MAX:
+            self.__performance = PERCENTAGE_MAX
+        else:
+            self.__performance = value
+    @property
+    def happiness(self):
+        return self.__happiness
+    @happiness.setter
+    def happiness(self, val):
+        if val < PERCENTAGE_MIN:
+            self.__happiness = PERCENTAGE_MIN
+        elif val > PERCENTAGE_MAX:
+            self.__happiness = PERCENTAGE_MAX
+        else:
+            self.__happiness = val
     def daily_expense(self):
         #decrease happy by 1 and reduce our savings by the amount in daily
         # if savings fall below 0, employee is nO LONGER EMPLOYED!
