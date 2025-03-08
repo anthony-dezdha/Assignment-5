@@ -39,12 +39,12 @@ class Employee(ABC):
     """
 #ensure setup has every sublcas, same basicsetup
 #name, manager read only, salary is setter and property due to possibility of neg
-"""name (string, read-only): The name of the employee. This is a private instance variable that can only be accessed via a public property. It is read-only.
-manager (None or Manager, read-only): The employee's manager. This is a private instance variable that can only be accessed via a public property. It is read-only.
-performance (integer): The employee’s performance on a percentage scale of 0 to 100 as an integer value (PERCENTAGE_MIN to PERCENTAGE_MAX). The value is automatically clamped between 0 and 100 if a value that is out of range is given.
-happiness (integer): The employee’s happiness on a percentage scale of 0 to 100 as an integer value (PERCENTAGE_MIN to PERCENTAGE_MAX). The value is automatically clamped between 0 and 100 if a value that is out of range is given.
-salary (integer): The employee’s salary. Salaries must always be non-negative, and attempting to set a negative value raises a ValueError with the corresponding message SALARY_ERROR_MESSAGE.
-"""
+#name (string, read-only): The name of the employee. This is a private instance variable that can only be accessed via a public property. It is read-only.
+#manager (None or Manager, read-only): The employee's manager. This is a private instance variable that can only be accessed via a public property. It is read-only.
+#performance (integer): The employee’s performance on a percentage scale of 0 to 100 as an integer value (PERCENTAGE_MIN to PERCENTAGE_MAX). The value is automatically clamped between 0 and 100 if a value that is out of range is given.
+#happiness (integer): The employee’s happiness on a percentage scale of 0 to 100 as an integer value (PERCENTAGE_MIN to PERCENTAGE_MAX). The value is automatically clamped between 0 and 100 if a value that is out of range is given.
+#salary (integer): The employee’s salary. Salaries must always be non-negative, and attempting to set a negative value raises a ValueError with the corresponding message SALARY_ERROR_MESSAGE.
+
     def __init__(self, name, manager, salary, savings):
         self.relationships = {}
         self.savings = savings
